@@ -17,7 +17,7 @@ func _input( event ):
 		elif event.button_index == 1 and not event.is_pressed():
 			mouse_left_down = false
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	if (mouse_left_down):
 		var camera = $CameraGimbal/InnerGimbal/Camera
 		var ray_length = 100 # some large number
@@ -35,12 +35,17 @@ func _physics_process(delta):
 				if (placedWall == null):
 					placedWall = Wall.instance();
 					placedWall.transform.origin = lerp($Start.global_transform.origin, $Current.global_transform.origin, 0.5);
+					var relativeNormal = $RayCast.get_collision_normal() + placedWall.transform.origin;
+					placedWall.look_at(relativeNormal, Vector3.UP)
+
 					add_child(placedWall)
 				else:
 					placedWall.transform.origin = lerp($Start.global_transform.origin, $Current.global_transform.origin, .5)
 					var distance = mouseDownStartPosition.distance_to(mouseDownCurrentPosition);
 					print(distance)
-					placedWall.scale.x = distance;
+					placedWall.scale.z = distance / 2;
+					placedWall.look_at(mouseDownCurrentPosition, Vector3.UP)
+					
 			else:
 				mouseDownStartPosition = collisionPoint;
 				$Start.global_transform.origin = mouseDownStartPosition
